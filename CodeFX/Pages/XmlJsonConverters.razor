@@ -1,0 +1,32 @@
+﻿@page "/XmlJsonConverters"
+@using System.Text;
+@using System.Globalization;
+
+<h2>Xml to/from Json Converters</h2>
+
+<textarea @bind="Xml" wrap="soft" style="width: 46%; height: 700px; resize: none;" />
+
+<button class="btn btn-primary" @onclick="ConvertToJson" style="vertical-align:top">&gt;&gt;</button>
+<button class="btn btn-primary" @onclick="ConvertToXml" style="vertical-align:top">&lt;&lt;</button>
+
+<textarea @bind="Json" wrap="soft" style="width: 46%; height: 700px; resize: none;" />
+<br />
+
+@code {
+    private string Xml { get; set; }
+
+    private string Json { get; set; }
+
+    private void ConvertToJson()
+    {
+        System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+        doc.LoadXml(Xml);
+
+        Json = Newtonsoft.Json.JsonConvert.SerializeXmlNode(doc);
+    }
+
+    private void ConvertToXml()
+    {      
+        Xml = Newtonsoft.Json.JsonConvert.DeserializeXmlNode(Json)?.InnerXml;
+    }
+}

@@ -1,0 +1,76 @@
+@page "/BlazoriseDemo"
+@inject HttpClient Http
+@using Blazorise
+@using Blazorise.DataGrid
+@*@inject DialogService dialogService*@
+
+<h2>Blazorise Demo</h2>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+}
+
+<Tabs SelectedTab="@selectedTab">
+    <Items>
+        <Tab Name="DataGrid">DataGrid</Tab>
+        <Tab Name="TextArea">TextArea</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="DataGrid">
+            <Layout>
+                <LayoutHeader>
+                    @*<div class="col-md-12 d-flex align-items-end justify-content-end">
+                        <Button Color="Color.Primary" Clicked="@AddClicked" Margin="Margin.Is2.FromLeft">Add</Button>
+                        <Button Color="Color.Primary" Clicked="@EditClicked" Margin="Margin.Is2.FromLeft">Edit</Button>
+                        <Button Color="Color.Primary" Clicked="@DeleteClicked" Margin="Margin.Is2.FromLeft">Delete</Button>
+                    </div>*@
+                </LayoutHeader>
+                <LayoutContent>
+                    <DataGrid TItem="WeatherForecast" Data="@forecasts" @bind-SelectedRow="@selectedWeatherForecast"
+                              Sortable="true" Filterable="true">
+                        <DataGridColumn TItem="WeatherForecast" Field="@nameof(WeatherForecast.Id)" Caption="Id" Sortable="true" />
+                        <DataGridColumn TItem="WeatherForecast" Field="@nameof(WeatherForecast.Date)" Caption="Date" Editable="true">
+                            <DisplayTemplate>
+                                @($"{(context as WeatherForecast)?.Date:d}")
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="WeatherForecast" Field="@nameof(WeatherForecast.TemperatureC)" Caption="Temp. (C)" Editable="true" />
+                        <DataGridColumn TItem="WeatherForecast" Field="@nameof(WeatherForecast.TemperatureF)" Caption="Temp. (F)" Editable="true" />
+                        <DataGridColumn TItem="WeatherForecast" Field="@nameof(WeatherForecast.Summary)" Caption="Summary" Editable="true" />
+                    </DataGrid>
+                </LayoutContent>
+                <LayoutFooter>
+                    @selectedWeatherForecast
+                </LayoutFooter>
+            </Layout>
+        </TabPanel>
+        <TabPanel Name="TextArea">
+            <textarea Rows="25" style="margin-bottom: 20px; width: 100%; height: 100%" />
+        </TabPanel>
+    </Content>
+</Tabs>
+
+
+@code {
+
+    // Tabs
+
+    string selectedTab = "DataGrid";
+
+    // Data
+
+    private List<WeatherForecast> forecasts;
+
+    public WeatherForecast selectedWeatherForecast;
+
+    public EventCallback<WeatherForecast> SelectedForecast;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await WeatherForecastService.GetForecastAsync(DateTime.Now);
+    }
+}

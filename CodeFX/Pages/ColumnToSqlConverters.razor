@@ -1,0 +1,78 @@
+﻿@page "/ColumnToSqlConverters"
+@using System.Text;
+@using System.Globalization;
+@using Blazorise
+
+<h2>Converters</h2>
+
+<Tabs SelectedTab="@selectedTab">
+    <Items>
+        <Tab Name="ColumnsToSql">Columns To Sql</Tab>
+        <Tab Name="PropertiesToSql">Properties To Sql</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="ColumnsToSql">            
+                    <textarea @bind="SourceColumns" wrap="soft" style="width: 46%; height: 700px; resize: none;" />
+
+                    <button class="btn btn-primary" @onclick="GenerateSqlInsert1" style="vertical-align:top">>></button>
+
+                    <textarea @bind="SqlResilt1" wrap="soft" style="width: 46%; height: 700px; resize: none;" />
+                    <br />
+                    select column_name
+                    from INFORMATION_SCHEMA.COLUMNS as a
+                    WHERE a.TABLE_NAME = 'table_or_view_name'                
+        </TabPanel>
+        <TabPanel Name="PropertiesToSql">
+            <textarea @bind="SourceProperties" wrap="soft" style="width: 46%; height: 700px; resize: none;" />
+
+            <button class="btn btn-primary" @onclick="GenerateSqlInsert2" style="vertical-align:top">>></button>
+
+            <textarea @bind="SqlResilt2" wrap="soft" style="width: 46%; height: 700px; resize: none;" />
+
+        </TabPanel>
+    </Content>
+</Tabs>
+
+@code {
+
+    string selectedTab = "ColumnsToSql";
+
+    private string SourceColumns { get; set; }
+
+    private string SqlResilt1 { get; set; }
+
+    private void GenerateSqlInsert1()
+    {
+        string[] separator = { "\n" };
+        string[] lines = SourceColumns.Trim().Split(separator, System.StringSplitOptions.RemoveEmptyEntries);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < lines.Count(); i++)
+        {
+            string s2 = lines[i];
+            string ss2 = CultureInfo.CurrentUICulture.TextInfo.ToTitleCase(s2.Replace('_', ' '));
+            sb.Append($"INSERT INTO tax_system_columns (table_id, description, sort_order, is_default, column_name) VALUES (1, '{ss2}', {i + 1}, 1, '{s2}')");
+            sb.Append("\n");
+        }
+        SqlResilt1 = sb.ToString();
+    }
+
+    private string SourceProperties { get; set; }
+
+    private string SqlResilt2 { get; set; }
+
+    private void GenerateSqlInsert2()
+    {
+        string[] separator = { "public" };
+        string[] lines = SourceProperties.Trim().Split(separator, System.StringSplitOptions.RemoveEmptyEntries);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < lines.Count(); i++)
+        {
+            string[] ss = lines[i].Split(' ');
+            string s2 = ss[2];
+            string ss2 = CultureInfo.CurrentUICulture.TextInfo.ToTitleCase(s2.Replace('_', ' '));
+            sb.Append($"INSERT INTO tax_system_columns (table_id, description, sort_order, is_default, column_name) VALUES (1, '{ss2}', {i + 1}, 1, '{s2}')");
+            sb.Append("\n");
+        }
+        SqlResilt2 = sb.ToString();
+    }
+}
